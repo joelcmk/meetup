@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Test</title>
+</head>
+<body>
+  <div id="container">
+    <input id="code" type="text" placeholder="code" />
+    <button id="getToken">Get Token</button>
+    <p id="result"></p>
+  </div>
+  <div id="container">
+    <input id="refresh_token" type="text" placeholder="refreshToken" />
+    <button id="getNewAccessToken">Get new Access Token</button>
+    <p id="resultNew"></p>
+  </div>
+
+  <script type="text/javascript">
+    const getTokenElement = document.getElementById('getToken');
+    const getAccessTokenElement = document.getElementById('getNewAccessToken');
+    getTokenElement.onclick = function() {
+      const codeElement = document.getElementById('code');
+      const resultElement = document.getElementById('result');
+      const codeValue =  codeElement.value;
+
+      // Replace this by your function endpoint
+      const lambdaURL = 'https://bvifswm2n7.execute-api.us-west-2.amazonaws.com/dev/api/token/' + codeValue;
+
+      fetch(lambdaURL)
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(json) {
+        resultElement.innerText = JSON.stringify(json);
+      });
+    }
+    getAccessTokenElement.onclick = function() {
+      const codeElement = document.getElementById('refresh_token');
+      const resultElement = document.getElementById('resultNew');
+      const codeValue =  codeElement.value;
+
+      const lambdaURL = 'https://bvifswm2n7.execute-api.us-west-2.amazonaws.com/dev/api/refresh/' + codeValue;
+
+      fetch(lambdaURL)
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(json) {
+        resultElement.innerText = JSON.stringify(json);
+      });
+    }
+  </script>
+</body>
+</html>
