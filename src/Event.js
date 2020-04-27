@@ -13,21 +13,21 @@ class Event extends Component {
   render() {
     const showDetails = this.state.showDetails;
     return (
-      <div className="Event">
+      <div className="event">
         <div className="event__Overview">
-          <p></p>
-          <p></p>
+          <p>{this.props.event.name}</p>
+          <p className="eventDate">Date: {this.props.event.local_date}</p>
           <p></p>
           {showDetails &&
-            <button onClick={() => this.handleShowDetails(false)}>Show Less</button>
+            <button className="eventButton" onClick={() => this.handleShowDetails(false)}>Show Less</button>
           }
           {!showDetails &&
-            <button onClick={() => this.handleShowDetails(true)}>Show More</button>
+            <button className="eventButton" onClick={() => this.handleShowDetails(true)}>Show More</button>
           }
         </div>
         {showDetails &&
           <div className="event__Details">
-            <p className="event__Details--description"></p>
+            <p className="event__Details--description">{this.props.event.description}</p>
           </div>
         }
       </div>
