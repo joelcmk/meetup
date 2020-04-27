@@ -60,7 +60,7 @@ async function getAccessToken() {
     const code = searchParams.get('code')
 
     if (!code) {
-      window.location.href = 'https://secure.meetup.com/oauth2/authorize?client_id=l6gv45ckvv3i91dn79egs16uqq&response_type=code&redirect_uri=https://joelcmk.github.io/meetup/'
+      window.location.href = 'https://secure.meetup.com/oauth2/authorize?client_id=l6gv45ckvv3i91dn79egs16uqq&response_type=code&redirect_uri=https://joelcmk.github.io/meetup'
       return null
     }
     return getOrRenewAccessToken('get', code);
