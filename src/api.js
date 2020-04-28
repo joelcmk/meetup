@@ -1,60 +1,25 @@
 import { mockEvents } from "./mock-events";
 import axios from "axios";
 
-async function getSuggestions(query) {
-  if (window.location.href.startsWith("http://localhost")) {
-    return [
-      {
-        city: "Munich",
-        country: "de",
-        localized_country_name: "Germany",
-        name_string: "Munich, Germany",
-        zip: "meetup3",
-        lat: 48.14,
-        lon: 11.58,
-      },
-      {
-        city: "Munich",
-        country: "us",
-        localized_country_name: "USA",
-        state: "ND",
-        name_string: "Munich, North Dakota, USA",
-        zip: "58352",
-        lat: 48.66,
-        lon: -98.85,
-      },
-    ];
+async function getOrRenewAccessToken(type, key) {
+  let url;
+  if (type === "get") {
+    url =
+      "https://h8girazxtb.execute-api.us-west-2.amazonaws.com/dev/api/token/" +
+      key;
+  } else if (type === "renew") {
+    url =
+      "https://h8girazxtb.execute-api.us-west-2.amazonaws.com/dev/api/refresh/" +
+      key;
   }
-  const token = await getAccessToken();
-  if (token) {
-    const url =
-      "https://api.meetup.com/find/locations?&sign=true&photo-host=public&query=" +
-      query +
-      "&access_token=" +
-      token;
-    const result = await axios.get(url);
-    return result.data;
-  }
-  return [];
-}
 
-async function getEvents(lat, lon, page) {
-  if (window.location.href.startsWith("http://localhost")) {
-    return mockEvents.events;
-  }
-  const token = await getAccessToken();
-  if (token) {
-    let url =
-      "https://api.meetup.com/find/upcoming_events?&sign=true&photo-host=public" +
-      "&access_token=" +
-      token;
+  const tokenInfo = await axios.get(url);
 
-    if (lat && lon) {
-      url += "&lat=" + lat + "&lon=" + lon;
-    }
-    const result = await axios.get(url);
-    return result.data.events;
-  }
+  localStorage.setItem("access_token", tokenInfo.data.access_token);
+  localStorage.setItem("refresh_token", tokenInfo.data.refresh_token);
+  localStorage.setItem("last_saved_time", Date.now());
+
+  return tokenInfo.data.access_token;
 }
 
 async function getAccessToken() {
@@ -82,29 +47,76 @@ async function getAccessToken() {
   return getOrRenewAccessToken("renew", refreshToken);
 }
 
-async function getOrRenewAccessToken(type, key) {
-  let url;
-  if (type === "get") {
-    // Lambda endpoint to get token by code
-    url =
-      "https://h8girazxtb.execute-api.us-west-2.amazonaws.com/dev/api/token/" +
-      key;
-  } else if (type === "renew") {
-    // Lambda endpoint to get token by refresh token
-    url =
-      "https://h8girazxtb.execute-api.us-west-2.amazonaws.com/dev/api/refresh/" +
-      key;
+async function getSuggestions(query) {
+  if (window.location.href.startsWith("http://localhost")) {
+    return [
+      {
+        city: "Munich",
+        country: "de",
+        localized_country_name: "Germany",
+        name_string: "Munich, Germany",
+        zip: "meetup3",
+        lat: 48.14,
+        lon: 11.58,
+      },
+      {
+        city: "Munich",
+        country: "us",
+        localized_country_name: "USA",
+        state: "ND",
+        name_string: "Munich, North Dakota, USA",
+        zip: "58352",
+        lat: 48.66,
+        lon: -98.85,
+      },
+    ];
   }
-  // Use axios to make a GET request to the endpoint
-  const tokenInfo = await axios.get(url);
 
-  // save tokens to localStorage together with a timespan
-  localStorage.setItem("access_token", tokenInfo.data.access_token);
-  localStorage.setItem("refresh_token", tokenInfo.data.refresh_token);
-  localStorage.setItem("last_saved_time", Date.now());
+  const token = await getAccessToken();
+  if (token) {
+    const url =
+      "https://api.meetup.com/find/locations?&sign=true&photo-host=public&query=" +
+      query +
+      "&access_token=" +
+      token;
+    const result = await axios.get(url);
+    return result.data;
+  }
+  return [];
+}
 
-  //return the access_token
-  return tokenInfo.data.access_token;
+async function getEvents(lat, lon, page) {
+  if (window.location.href.startsWith("http://localhost")) {
+    return mockEvents.events;
+  }
+
+  if (!navigator.onLine) {
+    const events = localStorage.getItem("lastEvents");
+    return JSON.parse(events);
+  }
+
+  const token = await getAccessToken();
+  if (token) {
+    let url =
+      "https://api.meetup.com/find/upcoming_events?&sign=true&photo-host=public" +
+      "&access_token=" +
+      token;
+    // lat, lon is optional, if we have lat and lon, then we can add them
+    if (lat && lon) {
+      url += "&lat=" + lat + "&lon=" + lon;
+    }
+    if (page) {
+      url += "&page=" + page;
+    }
+    const result = await axios.get(url);
+    const events = result.data.events;
+    if (events.length) {
+      localStorage.setItem("lastEvents", JSON.stringify(events));
+    }
+
+    return events;
+  }
+  return [];
 }
 
 export { getSuggestions, getEvents };
