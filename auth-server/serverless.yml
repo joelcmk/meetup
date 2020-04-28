@@ -1,6 +1,6 @@
 
 
-service: auth-server
+service: test
 
 provider:
   name: aws
@@ -16,8 +16,8 @@ functions:
           path: api/token/{code}
           method: get
   refreshAccessToken:
-      handler: handler.refreshAccessToken
-      events:
-        - http:
-            path: api/refresh/{code}
-            method: get
+    handler: handler.refreshAccessToken
+    events:
+      - http:
+          path: api/refresh/{code}
+          method: get
