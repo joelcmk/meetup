@@ -1,6 +1,52 @@
 import { mockEvents } from "./mock-events";
 import axios from "axios";
 
+async function getOrRenewAccessToken(type, key) {
+  let url;
+  if (type === "get") {
+    url =
+      "https://f2x5vqozrh.execute-api.ca-central-1.amazonaws.com/dev/api/token/" +
+      key;
+  } else if (type === "renew") {
+    url =
+      "https://f2x5vqozrh.execute-api.ca-central-1.amazonaws.com/dev/api/refresh/" +
+      key;
+  }
+
+  const tokenInfo = await axios.get(url);
+
+  localStorage.setItem("access_token", tokenInfo.data.access_token);
+  localStorage.setItem("refresh_token", tokenInfo.data.refresh_token);
+  localStorage.setItem("last_saved_time", Date.now());
+
+  return tokenInfo.data.access_token;
+}
+
+async function getAccessToken() {
+  const accessToken = localStorage.getItem("access_token");
+
+  if (!accessToken) {
+    const searchParams = new URLSearchParams(window.location.search);
+    const code = searchParams.get("code");
+
+    if (!code) {
+      window.location.href =
+        "https://secure.meetup.com/oauth2/authorize?client_id=evqsptoae0qi6fh5v0fbivg7mq&response_type=code&redirect_uri=https://zaclinz.github.io/meetup";
+      return null;
+    }
+    return getOrRenewAccessToken("get", code);
+  }
+
+  const lastSavedTime = localStorage.getItem("last_saved_time");
+
+  if (accessToken && Date.now() - lastSavedTime < 3600000) {
+    return accessToken;
+  }
+
+  const refreshToken = localStorage.getItem("refresh_token");
+  return getOrRenewAccessToken("renew", refreshToken);
+}
+
 async function getSuggestions(query) {
   if (window.location.href.startsWith("http://localhost")) {
     return [
@@ -25,6 +71,7 @@ async function getSuggestions(query) {
       },
     ];
   }
+
   const token = await getAccessToken();
   if (token) {
     const url =
@@ -42,69 +89,34 @@ async function getEvents(lat, lon, page) {
   if (window.location.href.startsWith("http://localhost")) {
     return mockEvents.events;
   }
+
+  if (!navigator.onLine) {
+    const events = localStorage.getItem("lastEvents");
+    return JSON.parse(events);
+  }
+
   const token = await getAccessToken();
   if (token) {
     let url =
       "https://api.meetup.com/find/upcoming_events?&sign=true&photo-host=public" +
       "&access_token=" +
       token;
-
+    // lat, lon is optional, if we have lat and lon, then we can add them
     if (lat && lon) {
       url += "&lat=" + lat + "&lon=" + lon;
     }
-    const result = await axios.get(url);
-    return result.data.events;
-  }
-}
-
-async function getAccessToken() {
-  const accessToken = localStorage.getItem("access_token");
-
-  if (!accessToken) {
-    const searchParams = new URLSearchParams(window.location.search);
-    const code = searchParams.get("code");
-
-    if (!code) {
-      window.location.href =
-        "https://secure.meetup.com/oauth2/authorize?client_id=l6gv45ckvv3i91dn79egs16uqq&response_type=code&redirect_uri=https://joelcmk.github.io/meetup";
-      return null;
+    if (page) {
+      url += "&page=" + page;
     }
-    return getOrRenewAccessToken("get", code);
+    const result = await axios.get(url);
+    const events = result.data.events;
+    if (events.length) {
+      localStorage.setItem("lastEvents", JSON.stringify(events));
+    }
+
+    return events;
   }
-
-  const lastSavedTime = localStorage.getItem("last_saved_time");
-
-  if (accessToken && Date.now() - lastSavedTime < 3600000) {
-    return accessToken;
-  }
-
-  const refreshToken = localStorage.getItem("refresh_token");
-  return getOrRenewAccessToken("renew", refreshToken);
-}
-
-async function getOrRenewAccessToken(type, key) {
-  let url;
-  if (type === "get") {
-    // Lambda endpoint to get token by code
-    url =
-      "https://h8girazxtb.execute-api.us-west-2.amazonaws.com/dev/api/token/" +
-      key;
-  } else if (type === "renew") {
-    // Lambda endpoint to get token by refresh token
-    url =
-      "https://h8girazxtb.execute-api.us-west-2.amazonaws.com/dev/api/refresh/" +
-      key;
-  }
-  // Use axios to make a GET request to the endpoint
-  const tokenInfo = await axios.get(url);
-
-  // save tokens to localStorage together with a timespan
-  localStorage.setItem("access_token", tokenInfo.data.access_token);
-  localStorage.setItem("refresh_token", tokenInfo.data.refresh_token);
-  localStorage.setItem("last_saved_time", Date.now());
-
-  //return the access_token
-  return tokenInfo.data.access_token;
+  return [];
 }
 
 export { getSuggestions, getEvents };
