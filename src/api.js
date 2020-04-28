@@ -5,11 +5,11 @@ async function getOrRenewAccessToken(type, key) {
   let url;
   if (type === "get") {
     url =
-      "https://f2x5vqozrh.execute-api.ca-central-1.amazonaws.com/dev/api/token/" +
+      "https://h8girazxtb.execute-api.us-west-2.amazonaws.com/dev/api/token/" +
       key;
   } else if (type === "renew") {
     url =
-      "https://f2x5vqozrh.execute-api.ca-central-1.amazonaws.com/dev/api/refresh/" +
+      "https://h8girazxtb.execute-api.us-west-2.amazonaws.com/dev/api/refresh/" +
       key;
   }
 
@@ -31,7 +31,7 @@ async function getAccessToken() {
 
     if (!code) {
       window.location.href =
-        "https://secure.meetup.com/oauth2/authorize?client_id=evqsptoae0qi6fh5v0fbivg7mq&response_type=code&redirect_uri=https://zaclinz.github.io/meetup";
+        "https://secure.meetup.com/oauth2/authorize?client_id=l6gv45ckvv3i91dn79egs16uqq&response_type=code&redirect_uri=https://joelcmk.github.io/meetup";
       return null;
     }
     return getOrRenewAccessToken("get", code);
