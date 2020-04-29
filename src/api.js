@@ -28,7 +28,7 @@ async function getSuggestions(query) {
   const token = await getAccessToken();
   if (token) {
     const url =
-      "https://api.meetup.com/find/locations?&sign=true&photo-host=public&query=" +
+      "https://crossorig.in/https://api.meetup.com/find/locations?&sign=true&photo-host=public&query=" +
       query +
       "&access_token=" +
       token;
@@ -45,7 +45,7 @@ async function getEvents(lat, lon, page) {
   const token = await getAccessToken();
   if (token) {
     let url =
-      "https://api.meetup.com/find/upcoming_events?&sign=true&photo-host=public" +
+      "https://crossorig.in/https://api.meetup.com/find/upcoming_events?&sign=true&photo-host=public" +
       "&access_token=" +
       token;
 
