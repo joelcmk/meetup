@@ -1,6 +1,11 @@
+* {
+  background-color: #e50914;
+}
+
 .App {
   text-align: center;
   padding: 2% 5%;
+  background-color: #e50914;
 }
 
 .App * {
@@ -16,7 +21,8 @@ p {
   margin: 5px 0;
 }
 
-input[type="text"], input[type="number"] {
+input[type="text"],
+input[type="number"] {
   padding: 8px 6px 8px 10px;
   border-radius: 4px;
   outline: none;
@@ -25,6 +31,7 @@ input[type="text"], input[type="number"] {
   line-height: 20px;
   align-self: center;
   height: 38px;
+  background-color: #eee;
 }
 
 .city {
@@ -55,9 +62,14 @@ input[type="text"], input[type="number"] {
   border-bottom-right-radius: 4px;
 }
 
-
 .suggestions > li:hover {
-  background-color: #BCDCDB;
+  background-color: #bcdcdb;
+}
+
+.EventList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .event {
@@ -67,6 +79,13 @@ input[type="text"], input[type="number"] {
   border: 1px solid #ccc;
   border-radius: 4px;
   position: relative;
+  width: 500px;
+  margin-left: 20px;
+  background-color: #eee;
+}
+
+.event * {
+  background-color: #eee;
 }
 
 .eventButton {
@@ -77,6 +96,8 @@ input[type="text"], input[type="number"] {
   border-radius: 4px;
   outline: none;
   cursor: pointer;
+  background-color: black;
+  color: #ffffff;
 }
 
 .name {
@@ -89,7 +110,8 @@ input[type="text"], input[type="number"] {
   font-size: 14px;
 }
 
-.going, .visibility {
+.going,
+.visibility {
   font-style: italic;
 }
 
@@ -101,4 +123,10 @@ input[type="text"], input[type="number"] {
   width: 80px;
   margin: 20px 0 50px;
   text-align: right;
+}
+
+@media only screen and (min-width: 360px) and (max-width: 640px) {
+  .event {
+    width: 350px;
+  }
 }
