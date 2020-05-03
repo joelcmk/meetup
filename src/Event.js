@@ -3,6 +3,7 @@ import React, { Component } from "react";
 class Event extends Component {
   state = {
     showDetails: false,
+    events: []
   };
 
   handleShowDetails = (value) => {
@@ -12,7 +13,7 @@ class Event extends Component {
   render() {
     const showDetails = this.state.showDetails;
     return (
-      <div className="event">
+      <div className="event Event">
         <div className="event__Overview">
           <p className="eventDate">Date: {this.props.event.local_date}</p>
           <p>

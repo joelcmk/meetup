@@ -3,7 +3,7 @@ import { getSuggestions } from './api';
 
 class CitySearch extends Component {
   state = {
-    query: 'Munich',
+    query: 'Munich, Germany',
     suggestions: [],
   }
   handleInputChanged = (event) => {
