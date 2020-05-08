@@ -1,11 +1,11 @@
 * {
-  background-color: #e50914;
+  background-color: #F8F8F8;
 }
 
 .App {
   text-align: center;
   padding: 2% 5%;
-  background-color: #e50914;
+  background-color: #F8F8F8;
 }
 
 .App * {
@@ -119,10 +119,34 @@ input[type="number"] {
   overflow-x: hidden;
 }
 
+.chart {
+  margin-bottom: 10px;
+}
+
+/* Input */
 .number-of-events {
   width: 80px;
   margin: 20px 0 50px;
   text-align: right;
+}
+
+.errorAlert {
+  height: 15px;
+}
+
+#numberOfEvents__input {
+  width: 70px;
+} 
+
+.numberOfEvents__group {
+  display: flex;
+  justify-content: center;
+}
+
+.numverOfEvents_p {
+  margin-left: 10px;
+  font-size: large;
+  padding: 10px 0;
 }
 
 @media only screen and (min-width: 360px) and (max-width: 640px) {

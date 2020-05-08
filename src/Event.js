@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { PieChart, Pie, ResponsiveContainer, Cell } from 'recharts';
 
 class Event extends Component {
   state = {
@@ -10,7 +11,12 @@ class Event extends Component {
     this.setState({ showDetails: value });
   };
 
+  getData = () => {
+    return [{ name: 'Reservations', value: this.props.event.rsvp_limit }, { name: 'Free slots', value: this.props.event.yes_rsvp_count }]
+  }
+
   render() {
+    const colors = ['#89d48a', '#d77056'];
     const showDetails = this.state.showDetails;
     return (
       <div className="event Event">
@@ -43,6 +49,21 @@ class Event extends Component {
               className="event__Details--description"
               dangerouslySetInnerHTML={{ __html: this.props.event.description }}
             ></div>
+            <div className='chart'>
+              {this.props.event.rsvp_limit && (
+                <ResponsiveContainer height={400}>
+                  <PieChart width={730} height={250}>
+                    <Pie data={this.getData()} cx="50%" cy="50%" outerRadius={80} label>
+                      {
+                        this.getData().map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={colors[index]} />
+                        ))
+                      }
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </div>
           </div>
         )}
       </div>

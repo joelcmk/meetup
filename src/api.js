@@ -39,25 +39,39 @@ async function getSuggestions(query) {
 }
 
 async function getEvents(lat, lon, page) {
-  if (window.location.href.startsWith("http://localhost")) {
+  if (window.location.href.startsWith('http://localhost')) {
     return mockEvents.events;
   }
+
+  //checking to see if online
+  if (!navigator.onLine) {
+    const events = localStorage.getItem('lastEvents');
+    return JSON.parse(events);
+  }
+
   const token = await getAccessToken();
   if (token) {
-    let url =
-      "https://crossorig.in/https://api.meetup.com/find/upcoming_events?&sign=true&photo-host=public" +
-      "&access_token=" +
-      token;
+
+    let url = 'https://crossorig.in/https://api.meetup.com/find/upcoming_events?&sign=true&photo-host=public' + '&access_token=' + token;
 
     if (lat && lon) {
-      url += "&lat=" + lat + "&lon=" + lon;
+      url += '&lat=' + lat + '&lon=' + lon;
     }
+
     if (page) {
-      url += "&page=" + page;
+      url += '&page=' + page;
     }
+
     const result = await axios.get(url);
-    return result.data.events;
+    const events = result.data.events;
+
+    if (events.length) {
+      localStorage.setItem('lastEvents', JSON.stringify(events));
+    }
+
+    return events
   }
+  return [];
 }
 
 async function getAccessToken() {
