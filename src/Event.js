@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { PieChart, Pie, ResponsiveContainer, Cell } from 'recharts';
+import { PieChart, Pie, ResponsiveContainer, Cell, Tooltip, Legend } from 'recharts';
 
 class Event extends Component {
   state = {
@@ -12,7 +12,8 @@ class Event extends Component {
   };
 
   getData = () => {
-    return [{ name: 'Reservations', value: this.props.event.rsvp_limit }, { name: 'Free slots', value: this.props.event.yes_rsvp_count }]
+    return [{ name: " " + this.props.event.yes_rsvp_count + " Going", value: this.props.event.yes_rsvp_count },
+    { name: " " + (this.props.event.rsvp_limit - this.props.event.yes_rsvp_count) + " Available", value: this.props.event.rsvp_limit - this.props.event.yes_rsvp_count }]
   }
 
   render() {
@@ -60,6 +61,8 @@ class Event extends Component {
                         ))
                       }
                     </Pie>
+                    <Legend iconType="circle" iconSize={10} />
+                    <Tooltip />
                   </PieChart>
                 </ResponsiveContainer>
               )}
